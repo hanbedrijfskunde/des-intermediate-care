@@ -32,7 +32,7 @@ Our DES model represents the day-to-day operations of intermediate care faciliti
   - The model accounts for day/night and weekday/weekend differences. For example, in the baseline, admissions may be restricted at night or on weekends due to limited staffing (any arrivals during off-hours would have to wait until the next morning or Monday). These operational rules are captured in the simulation schedule.
 
 ```mermaid
-flowchart LR
+flowchart TD
     StartPatient([Patient Arrives]) --> CheckAdm{Admissions Allowed?}
         CheckAdm -- Yes --> RequestBed[Request Appropriate Bed]
         CheckAdm -- No --> WaitAdm[Wait Until Next Admission Window]
