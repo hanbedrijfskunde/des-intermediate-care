@@ -81,6 +81,53 @@ After running the simulation for each scenario, we collect key **performance met
 
 - **Comparative Scenario Impact:** A special section of the dashboard or report will summarize **the impact of each policy scenario** side by side. For example, a table might list each scenario (24/7 admissions, Improved Triage, Added Beds, and perhaps combinations) and key outcomes: average wait time, occupancy rate, percentage of days with full occupancy, etc. This makes it easy to identify which intervention yields the best improvement. We expect to see that process-oriented interventions (triage and 24/7 access) have a dramatic effect on waiting time and slightly improved throughput, whereas adding beds might show moderate reductions in wait time unless demand was extremely high. Such comparative visuals and statistics provide evidence for decision-makers on which changes would most improve intermediate care performance.
 
+```mermaid
+flowchart TD
+    Start([Start Simulation]) --> InitEnv[Initialize Environment & Resources]
+    InitEnv --> InitStats[Initialize Statistics Collection]
+    InitStats --> StartProc[Start Processes]
+
+    StartProc --> RegPatGen[Regular Patient Generator]
+    StartProc --> CrisisPatGen[Crisis Patient Generator]
+    StartProc --> StatsCol[Statistics Collection Process]
+    StartProc --> RunSim[Run Simulation for Duration]
+
+    subgraph PatientGenerators["Patient Generators"]
+        RegPatGen --> CalcArrival1[Calculate Next Arrival Time]
+        CalcArrival1 --> WaitArrival1[Wait Until Next Arrival]
+        WaitArrival1 --> CreatePat1[Create Regular Patient]
+        CreatePat1 --> LogArr1[Log Arrival]
+        LogArr1 --> StartProc1[Start Patient Process]
+        StartProc1 --> CalcArrival1
+
+        CrisisPatGen --> CalcArrival2[Calculate Next Arrival Time]
+        CalcArrival2 --> WaitArrival2[Wait Until Next Arrival]
+        WaitArrival2 --> CreatePat2[Create Crisis Patient]
+        CreatePat2 --> LogArr2[Log Arrival]
+        LogArr2 --> StartProc2[Start Patient Process]
+        StartProc2 --> CalcArrival2
+    end
+
+    subgraph StatisticsCollection["Statistics Collection"]
+        StatsCol --> WaitHour[Wait for Next Hour]
+        WaitHour --> RecordOcc[Record Current Occupancy]
+        RecordOcc --> RecordQueue[Record Queue Lengths]
+        RecordQueue --> WaitHour
+    end
+
+    RunSim --> ProcessResults[Process Results]
+    ProcessResults --> CreateVis[Create Visualizations]
+    CreateVis --> End([End Simulation])
+
+    classDef processNode fill:#f9f,stroke:#333,stroke-width:2px
+    classDef decisionNode fill:#bbf,stroke:#333,stroke-width:2px
+    classDef startEndNode fill:#9f9,stroke:#333,stroke-width:2px
+
+    class Start,End startEndNode
+    class CheckAdm,BedAvail decisionNode
+    class InitEnv,InitStats,StartProc,RunSim,ProcessResults,CreateVis processNode
+```
+
 The dashboard would be interactive and visual, but since we cannot render charts here, one can imagine line graphs of occupancy over time, bar charts of average wait by scenario, and perhaps distribution plots of wait times. All these outputs together give a comprehensive view of the system’s behavior under each policy.
 
 ## Insights and Recommendations
