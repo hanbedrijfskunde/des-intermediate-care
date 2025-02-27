@@ -31,6 +31,28 @@ Our DES model represents the day-to-day operations of intermediate care faciliti
   - Discharges: Patients currently in intermediate care complete their stay based on a **length-of-stay (LOS)** distribution (modeled as exponential or gamma, reflecting observed stay lengths. When a patient is discharged, that bed becomes free for the next waiting patient (if any).
   - The model accounts for day/night and weekday/weekend differences. For example, in the baseline, admissions may be restricted at night or on weekends due to limited staffing (any arrivals during off-hours would have to wait until the next morning or Monday). These operational rules are captured in the simulation schedule.
 
+```mermaid
+flowchart LR
+    StartPatient([Patient Arrives]) --> CheckAdm{Admissions Allowed?}
+        CheckAdm -- Yes --> RequestBed[Request Appropriate Bed]
+        CheckAdm -- No --> WaitAdm[Wait Until Next Admission Window]
+        WaitAdm --> RequestBed
+
+        RequestBed --> BedAvail{Bed Available?}
+        BedAvail -- No --> WaitQueue[Wait in Queue]
+        WaitQueue --> BedAvail
+
+        BedAvail -- Yes --> StartTriage[Start Triage Process]
+        StartTriage --> WaitTriage[Wait for Triage Delay]
+        WaitTriage --> Admit[Admit Patient to Bed]
+
+        Admit --> RecordWait[Record Waiting Time]
+        RecordWait --> GenLOS[Generate Length of Stay]
+        GenLOS --> OccupyBed[Occupy Bed for LOS Duration]
+        OccupyBed --> Discharge[Discharge Patient]
+        Discharge --> RecordDisch[Record Discharge]
+```
+
 By simulating many days (e.g. over several months or a year with multiple replications), we obtain statistically reliable performance metrics. The model is calibrated to current conditions so that baseline results (occupancy, average waits, etc.) align with known data or estimates for the Arnhem and Nijmegen region.
 
 ## Policy Scenarios Tested
