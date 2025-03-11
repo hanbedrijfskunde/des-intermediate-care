@@ -424,3 +424,20 @@ if __name__ == "__main__":
         simulation_duration=365,
         warm_up_period=30
     )
+    
+    # Run 24/7 admissions scenario and increase capacity
+    extended_hours_results, extended_hours_sim = run_scenario(
+        "24-7 Admissions Plus Capacity Increase",  
+        regular_beds=60,  # 20% more regular beds
+        crisis_beds=12,   # 20% more crisis beds
+        regular_arrival_rate=8,
+        crisis_arrival_rate=2,
+        regular_los_mean=14,
+        crisis_los_mean=7,
+        triage_delay_mean=1.5,
+        time_dependent_arrivals=True,
+        weekend_admission_restriction=False,  # No weekend restrictions
+        night_admission_restriction=False,    # No night restrictions
+        simulation_duration=365,
+        warm_up_period=30
+    )
